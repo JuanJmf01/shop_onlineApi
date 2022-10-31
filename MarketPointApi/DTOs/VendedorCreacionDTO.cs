@@ -2,12 +2,16 @@
 
 namespace MarketPointApi.DTOs
 {
-    public class VendedorDTO
+    public class VendedorCreacionDTO
     {
-        public int Id { get; set; }
+        [Required]
         public string Nombres { get; set; }
+        [Required]
         public string Apellidos { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
         public long NumeroCelular { get; set; }
         public string NombreNegocio { get; set; }
         public string DescripcionNegocio { get; set; }
@@ -15,6 +19,7 @@ namespace MarketPointApi.DTOs
         public string Instagram { get; set; }
         public bool StateVendedor { get; set; }
         public bool StateDomiciliario { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 }

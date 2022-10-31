@@ -74,3 +74,4 @@ D:\EAFIT\IngSoftware\Proyecto\Plataforma de servicios\MarketPointApi\MarketPoint
 D:\EAFIT\IngSoftware\Proyecto\Plataforma de servicios\MarketPointApi\MarketPointApi\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
 D:\EAFIT\IngSoftware\Proyecto\Plataforma de servicios\MarketPointApi\MarketPointApi\bin\Debug\net6.0\System.IO.Hashing.dll
 D:\EAFIT\IngSoftware\Proyecto\Plataforma de servicios\MarketPointApi\MarketPointApi\bin\Debug\net6.0\System.Memory.Data.dll
+D:\EAFIT\IngSoftware\Proyecto\Plataforma de servicios\MarketPointApi\MarketPointApi\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

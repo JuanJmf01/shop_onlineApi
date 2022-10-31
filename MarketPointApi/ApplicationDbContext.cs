@@ -1,9 +1,10 @@
 ﻿using MarketPointApi.Entidades;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MarketPointApi
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -34,10 +35,11 @@ namespace MarketPointApi
 
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Vendedor> Vendedores { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         public DbSet<Producto> Productos { get; set; }
         public DbSet<ProductosCategorias> ProductosCategorias { get; set; } //Extencion de dos tablas con conexion muchos a muchos
         public DbSet<ProductosVendedores> ProductosVendedores { get; set; } //Extencion de dos tablas con conexion muchos a muchos
-
+        public DbSet<Rating> Ratings { get; set; }
     }
 }

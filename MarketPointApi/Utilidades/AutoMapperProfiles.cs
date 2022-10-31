@@ -11,7 +11,15 @@ namespace MarketPointApi.Utilidades
         {
 
             CreateMap<Categoria, CategoriaDTO>().ReverseMap();
-            CreateMap<CategoriaCreacionDTO, Categoria>();
+
+
+            CreateMap<Vendedor, VendedorDTO>().ReverseMap();
+            CreateMap<VendedorCreacionDTO, Vendedor>();
+
+            CreateMap<Usuario, UsuarioDTO>().ReverseMap();
+            CreateMap<UsuarioCreacionDTO, Usuario>();
+
+
 
 
             CreateMap<ProductoCreacionDTO, Producto>()

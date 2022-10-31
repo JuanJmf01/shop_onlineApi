@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
+using MarketPointApi.Migrations;
 using MarketPointApi.Utilidades;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +17,22 @@ namespace MarketPointApi.Controllers
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
         private readonly IAlmacenadorArchivos almacenadorArchivos;
+        private readonly UserManager<IdentityUser> userManager;
         private readonly string contenedor = "productos";
 
         public ProductosController(ApplicationDbContext context,
             IMapper mapper,
-            IAlmacenadorArchivos almacenadorArchivos)
+            IAlmacenadorArchivos almacenadorArchivos,
+            UserManager<IdentityUser> userManager)
         {
             this.context = context;
             this.mapper = mapper;
             this.almacenadorArchivos = almacenadorArchivos;
+            this.userManager = userManager;
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
             var enOferta = true;
@@ -48,6 +55,7 @@ namespace MarketPointApi.Controllers
 
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ProductoDTO>> Get(int id)
         {
             var producto = await context.Productos
@@ -57,9 +65,36 @@ namespace MarketPointApi.Controllers
                 .Include(x => x.ProductosVendedores).ThenInclude(x => x.Vendedor)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if(producto == null) {  return NotFound(); }
+            if (producto == null) { return NotFound(); }
+
+            var promedioVoto = 0.0;
+            var usuarioVoto = 0;
+
+            if (await context.Ratings.AnyAsync(x => x.ProductoId == id))
+            {
+                promedioVoto = await context.Ratings.Where(x => x.ProductoId == id)
+                    .AverageAsync(x => x.Puntuacion);
+
+                if (HttpContext.User.Identity.IsAuthenticated)
+                {
+                    var email = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "email").Value;
+                    var usuario = await userManager.FindByEmailAsync(email);
+                    var usuarioId = usuario.Id;
+                    var ratingDB = await context.Ratings
+                        .FirstOrDefaultAsync(x => x.UsuarioId == usuarioId && x.ProductoId == id);
+
+                    if(ratingDB != null)
+                    {
+                        usuarioVoto = ratingDB.Puntuacion;
+                    }
+                }
+                
+
+            }
 
             var dto = mapper.Map<ProductoDTO>(producto);
+            dto.VotoUsuario = usuarioVoto;
+            dto.PromedioVoto = promedioVoto;
             return dto;
         }
 
@@ -94,6 +129,39 @@ namespace MarketPointApi.Controllers
 
             return resultado;
 
+
+        }
+
+        [HttpGet("filtrar")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<ProductoDTO>>> Filtrar([FromQuery] ProductosFiltrarDTO productosFiltrarDTO)
+        {
+            var productosQueryable = context.Productos.AsQueryable();
+
+            if (!string.IsNullOrEmpty(productosFiltrarDTO.Nombre))
+            {
+                productosQueryable = productosQueryable.Where(x => x.Nombre.Contains(productosFiltrarDTO.Nombre));
+            }
+
+            if (productosFiltrarDTO.Oferta)
+            {
+                productosQueryable = productosQueryable.Where(x => x.Oferta);
+            }
+
+            if(productosFiltrarDTO.CategoriaId != 0)
+            {
+                productosQueryable = productosQueryable
+                    //Paso 1: De la tabla categorias, seleccionamos todos aquellos isCategorias que conincidan
+                    //        Con el idCategoria que nos llega del front
+                    //Paso 2: Finalmente solo traemos los productos que contengan(Contains) ese idCategoria 
+                    //        Que en el paso 1 seleccionamos
+                    .Where(x => x.ProductosCategorias.Select(y => y.CategoriaId)
+                    .Contains(productosFiltrarDTO.CategoriaId));
+
+            }
+
+            var productos = await productosQueryable.ToListAsync();
+            return mapper.Map<List<ProductoDTO>>(productos);
 
         }
 

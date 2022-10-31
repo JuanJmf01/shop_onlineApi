@@ -1,9 +1,11 @@
 using MarketPointApi;
 using MarketPointApi.Utilidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +17,30 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
+//Control de usuarios
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secrretsecreehtgtdfkheytmadaesereyrtkweusreraesruta"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(opciones =>
+    opciones.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = key,
+        ClockSkew = TimeSpan.Zero
+    });
+
+
+//Automapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+//Almacenador en AzureStorage
 builder.Services.AddTransient<IAlmacenadorArchivos, AlmacenadorAzureStorage>();
 
 
@@ -38,7 +62,7 @@ builder.Services.AddCors(options =>
 });
 
 
-
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 var app = builder.Build();
 
