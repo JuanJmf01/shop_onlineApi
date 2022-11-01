@@ -37,6 +37,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
+builder.Services.AddAuthorization(opciones =>
+{
+    opciones.AddPolicy("EsVendedor", policy => policy.RequireClaim("role", "EsVendedor"));
+});
+
 //Automapper
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
@@ -61,8 +66,9 @@ builder.Services.AddCors(options =>
         });
 });
 
-
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
+
 
 var app = builder.Build();
 
@@ -71,6 +77,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
 }
 
 //Conexion front

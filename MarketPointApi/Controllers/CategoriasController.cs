@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +9,7 @@ namespace MarketPointApi.Controllers
 {
     [ApiController]
     [Route("api/categorias")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsVendedor")]
     public class CategoriasController : ControllerBase
     {
         private readonly ILogger<CategoriasController> logger;
@@ -23,6 +26,7 @@ namespace MarketPointApi.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<CategoriaDTO>>> Get()
         {
             var categorias = await context.Categorias.OrderBy(x => x.Nombre).ToListAsync();

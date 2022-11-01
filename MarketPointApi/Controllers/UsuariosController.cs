@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketPointApi.Controllers
