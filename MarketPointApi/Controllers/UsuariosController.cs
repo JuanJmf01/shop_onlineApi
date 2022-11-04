@@ -4,6 +4,7 @@ using MarketPointApi.Entidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MarketPointApi.Controllers
 {
@@ -32,6 +33,22 @@ namespace MarketPointApi.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
+
+
+        [HttpGet("{Email}")]
+        public async Task<ActionResult<VendedorDTO>> GetVendedores(string Email)
+        {
+            var usuario = await context.Vendedores.FirstOrDefaultAsync(x => x.Email == Email);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<VendedorDTO>(usuario);
+
+        }
+
+        
 
     }
 }

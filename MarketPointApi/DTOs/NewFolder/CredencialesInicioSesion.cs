@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MarketPointApi.DTOs
+namespace MarketPointApi.DTOs.NewFolder
 {
-    public class CredencialesUsuario
+    public class CredencialesInicioSesion
     {
         public string Nombres { get; set; }
         [Required]

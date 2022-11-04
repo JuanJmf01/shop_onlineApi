@@ -29,7 +29,7 @@ namespace MarketPointApi.Controllers
         public async Task<ActionResult<RespuestaAutenticacion>> CrearCliente([FromBody] CredencialesUsuario credenciales)
         {
             var usuario = new IdentityUser {
-                UserName = credenciales.Email,
+                UserName = credenciales.Nombres,
                 Email = credenciales.Email
             };
             //Para crear un usuario utilizando Identity utilizamos userManager
@@ -72,7 +72,7 @@ namespace MarketPointApi.Controllers
             //claim: Conjunto de datos confiables acerca del usuario
             var claims = new List<Claim>()
             {
-                new Claim("email", credenciales.Email),
+                new Claim("email", credenciales.Email)
             };
 
             // Traemos el usuario para traer los claims de ese usuario en base de datos
