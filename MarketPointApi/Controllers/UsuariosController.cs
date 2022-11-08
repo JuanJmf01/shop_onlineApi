@@ -33,22 +33,22 @@ namespace MarketPointApi.Controllers
             await context.SaveChangesAsync();
             return NoContent();
         }
-
+      
 
         [HttpGet("{Email}")]
-        public async Task<ActionResult<VendedorDTO>> GetVendedores(string Email)
+        public async Task<ActionResult<UsuarioDTO>> GetClientes(string Email)
         {
-            var usuario = await context.Vendedores.FirstOrDefaultAsync(x => x.Email == Email);
+            var usuario = await context.Usuarios.FirstOrDefaultAsync(x => x.Email == Email);
             if (usuario == null)
             {
                 return NotFound();
             }
 
-            return mapper.Map<VendedorDTO>(usuario);
+            return mapper.Map<UsuarioDTO>(usuario);
 
         }
 
-        
+
 
     }
 }

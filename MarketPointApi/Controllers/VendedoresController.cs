@@ -46,6 +46,19 @@ namespace MarketPointApi.Controllers
             return mapper.Map<VendedorDTO>(vendedor);
         }
 
+        [HttpGet("{Email}")]
+        public async Task<ActionResult<VendedorDTO>> GetVendedores(string Email)
+        {
+            var usuario = await context.Vendedores.FirstOrDefaultAsync(x => x.Email == Email);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<VendedorDTO>(usuario);
+
+        }
+
 
         [HttpGet("filtrar")]
         public async Task<ActionResult<List<VendedorDTO>>> Filtrar([FromQuery] VendedoresFiltrarDTO vendedoresFiltrarDTO)

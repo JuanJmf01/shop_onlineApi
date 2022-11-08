@@ -9,7 +9,7 @@ namespace MarketPointApi.Controllers
 {
     [ApiController]
     [Route("api/categorias")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsVendedor")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CategoriasController : ControllerBase
     {
         private readonly ILogger<CategoriasController> logger;
