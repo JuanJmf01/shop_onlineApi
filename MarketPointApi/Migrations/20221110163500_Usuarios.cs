@@ -18,6 +18,7 @@ namespace MarketPointApi.Migrations
                     Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumeroCelular = table.Column<long>(type: "bigint", nullable: false),
+                    StateDomiciliario = table.Column<bool>(type: "bit", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

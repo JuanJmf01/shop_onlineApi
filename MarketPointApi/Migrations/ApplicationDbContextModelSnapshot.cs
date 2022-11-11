@@ -156,6 +156,9 @@ namespace MarketPointApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("StateDomiciliario")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");

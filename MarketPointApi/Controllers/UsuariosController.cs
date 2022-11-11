@@ -25,6 +25,18 @@ namespace MarketPointApi.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<UsuarioDTO>> Get(int id)
+        {
+            var cliente = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == id);
+            if (cliente == null)
+            {
+                return NotFound();  
+            }
+
+            return mapper.Map<UsuarioDTO>(cliente);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] UsuarioCreacionDTO usuarioCreacionDTO)
         {
@@ -48,6 +60,30 @@ namespace MarketPointApi.Controllers
 
         }
 
+        [HttpGet("filtrar")]
+        public async Task<ActionResult<List<UsuarioDTO>>> Filtrar([FromQuery] UsuariosFiltrarDTO usuariosFiltrarDTO)
+        {
+            var domiciliariosQueryable = context.Usuarios.AsQueryable();
+
+            if (!string.IsNullOrEmpty(usuariosFiltrarDTO.Nombres))
+            {
+                domiciliariosQueryable = domiciliariosQueryable.Where(x => x.Nombres.Contains(usuariosFiltrarDTO.Nombres));
+            }
+
+            if (!string.IsNullOrEmpty(usuariosFiltrarDTO.Apellidos))
+            {
+                domiciliariosQueryable = domiciliariosQueryable.Where(x => x.Apellidos.Contains(usuariosFiltrarDTO.Apellidos));
+            }
+
+            if (usuariosFiltrarDTO.StateDomiciliario)
+            {
+                domiciliariosQueryable = domiciliariosQueryable.Where(x => x.StateDomiciliario);
+            }
+
+            var domiciliarios = await domiciliariosQueryable.ToListAsync();
+            return mapper.Map<List<UsuarioDTO>>(domiciliarios);
+
+        }
 
 
     }

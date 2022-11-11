@@ -9,6 +9,7 @@ namespace MarketPointApi.DTOs
         public string Apellidos { get; set; }
         public string Email { get; set; }
         public long NumeroCelular { get; set; }
+        public bool StateDomiciliario { get; set; }
         public string Password { get; set; }
     }
 }

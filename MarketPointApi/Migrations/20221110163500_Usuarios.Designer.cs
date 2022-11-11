@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketPointApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221020002908_Usuarios")]
+    [Migration("20221110163500_Usuarios")]
     partial class Usuarios
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,6 +105,32 @@ namespace MarketPointApi.Migrations
                     b.ToTable("ProductosVendedores");
                 });
 
+            modelBuilder.Entity("MarketPointApi.Entidades.Rating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Puntuacion")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UsuarioId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("MarketPointApi.Entidades.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -131,6 +157,9 @@ namespace MarketPointApi.Migrations
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("StateDomiciliario")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -421,6 +450,23 @@ namespace MarketPointApi.Migrations
                     b.Navigation("Producto");
 
                     b.Navigation("Vendedor");
+                });
+
+            modelBuilder.Entity("MarketPointApi.Entidades.Rating", b =>
+                {
+                    b.HasOne("MarketPointApi.Entidades.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId");
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

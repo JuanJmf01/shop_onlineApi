@@ -14,6 +14,7 @@ namespace MarketPointApi.Entidades
         public string Email { get; set; }
         [Required]
         public long NumeroCelular { get; set; }
+        public bool StateDomiciliario { get; set; }
         [Required]
         public string Password { get; set; }
     }

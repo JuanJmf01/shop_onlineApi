@@ -80,6 +80,11 @@ namespace MarketPointApi.Controllers
                 vendedoresQueryable = vendedoresQueryable.Where(x => x.StateVendedor);
             }
 
+            if (vendedoresFiltrarDTO.StateDomiciliario)
+            {
+                vendedoresQueryable = vendedoresQueryable.Where(x => x.StateDomiciliario);
+            }
+
             var vendedores = await vendedoresQueryable.ToListAsync();
             return mapper.Map<List<VendedorDTO>>(vendedores);
 
