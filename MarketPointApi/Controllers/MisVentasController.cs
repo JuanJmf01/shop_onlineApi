@@ -42,5 +42,6 @@ namespace MarketPointApi.Controllers
 
         }
 
+
     }
 }
