@@ -37,16 +37,6 @@ namespace MarketPointApi.Controllers
             return mapper.Map<UsuarioDTO>(cliente);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Post([FromBody] UsuarioCreacionDTO usuarioCreacionDTO)
-        {
-            var usuario = mapper.Map<Usuario>(usuarioCreacionDTO);
-            context.Add(usuario);
-            await context.SaveChangesAsync();
-            return NoContent();
-        }
-      
-
         [HttpGet("{Email}")]
         public async Task<ActionResult<UsuarioDTO>> GetClientes(string Email)
         {
@@ -59,6 +49,17 @@ namespace MarketPointApi.Controllers
             return mapper.Map<UsuarioDTO>(usuario);
 
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Post([FromBody] UsuarioCreacionDTO usuarioCreacionDTO)
+        {
+            var usuario = mapper.Map<Usuario>(usuarioCreacionDTO);
+            context.Add(usuario);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+      
+
 
         [HttpGet("filtrar")]
         public async Task<ActionResult<List<UsuarioDTO>>> Filtrar([FromQuery] UsuariosFiltrarDTO usuariosFiltrarDTO)

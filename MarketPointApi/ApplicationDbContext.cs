@@ -41,5 +41,7 @@ namespace MarketPointApi
         public DbSet<ProductosCategorias> ProductosCategorias { get; set; } //Extencion de dos tablas con conexion muchos a muchos
         public DbSet<ProductosVendedores> ProductosVendedores { get; set; } //Extencion de dos tablas con conexion muchos a muchos
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<MiCompra> MisCompras { get; set; }
+        public DbSet<MiVentaCompra> MisVentasCompras { get; set; }
     }
 }

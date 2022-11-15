@@ -11,5 +11,7 @@ namespace MarketPointApi.DTOs
         public long NumeroCelular { get; set; }
         public bool StateDomiciliario { get; set; }
         public string Password { get; set; }
+
+
     }
 }

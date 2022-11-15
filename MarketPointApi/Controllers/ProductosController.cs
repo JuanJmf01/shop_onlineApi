@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
-using MarketPointApi.Migrations;
 using MarketPointApi.Utilidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +12,6 @@ namespace MarketPointApi.Controllers
 {
     [ApiController]
     [Route("api/productos")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsVendedor")]
     public class ProductosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -34,7 +32,6 @@ namespace MarketPointApi.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> Get()
         {
             var enOferta = true;
@@ -47,7 +44,6 @@ namespace MarketPointApi.Controllers
                 .Where(x => x.Oferta != enOferta)
                 .ToListAsync();
 
-
             var resultado = new LandingPageDTO();
             resultado.Ofertas = mapper.Map<List<ProductoDTO>>(oferta);
             resultado.Productos = mapper.Map<List<ProductoDTO>>(noOferta);
@@ -57,7 +53,7 @@ namespace MarketPointApi.Controllers
 
 
         [HttpGet("{id:int}")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<ProductoDTO>> Get(int id)
         {
             var producto = await context.Productos
@@ -91,7 +87,6 @@ namespace MarketPointApi.Controllers
                     }
                 }
                 
-
             }
 
             var dto = mapper.Map<ProductoDTO>(producto);
@@ -101,12 +96,10 @@ namespace MarketPointApi.Controllers
         }
 
         [HttpGet("misProductos/{id:int}")]
-        [AllowAnonymous]
         public async Task<ActionResult<LandingPageDTO>> MisProductos(int id)
         {
             var productosQueryable = context.Productos.AsQueryable();
 
-            //Verificamos que sea diferente de 0 el id
             if(id != 0)
             {
                 productosQueryable = productosQueryable
@@ -132,11 +125,9 @@ namespace MarketPointApi.Controllers
 
             return resultado;
 
-
         }
 
         [HttpGet("filtrar")]
-        [AllowAnonymous]
         public async Task<ActionResult<List<ProductoDTO>>> Filtrar([FromQuery] ProductosFiltrarDTO productosFiltrarDTO)
         {
             var productosQueryable = context.Productos.AsQueryable();
@@ -170,7 +161,6 @@ namespace MarketPointApi.Controllers
 
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<ActionResult> Post([FromForm] ProductoCreacionDTO productoCreacionDTO)
         {
             var producto = mapper.Map<Producto>(productoCreacionDTO);
@@ -187,7 +177,6 @@ namespace MarketPointApi.Controllers
     
         //En este metodo (enpoind) vamos a llamar las categorias para mostrarlas en categorias seleccionadas en el front
         [HttpGet("PostGet")]
-        [AllowAnonymous]
         public async Task<ActionResult<ProductosPostGetDTO>> PostGet()
         {
             var categorias = await context.Categorias.ToListAsync();
@@ -199,7 +188,6 @@ namespace MarketPointApi.Controllers
 
         //Metodo nos permite cargar (obtener) los datos de los productos
         [HttpGet("PutGet/{id:int}")]
-        [AllowAnonymous]
         public async Task<ActionResult<ProductosPutGetDTO>> PutGet(int id)
         {
             var productoActionResult = await Get(id);
@@ -230,7 +218,6 @@ namespace MarketPointApi.Controllers
 
    
         [HttpPut("{id:int}")]
-        [AllowAnonymous]
         public async Task<ActionResult> Put(int id, [FromForm] ProductoCreacionDTO productoCreacionDTO)
         {
             //Utilizamos include de las demas tablas ya que ciertos datos vienen de aquellas tablas
@@ -259,7 +246,6 @@ namespace MarketPointApi.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        [AllowAnonymous]
         public async Task<ActionResult> Delete(int id)
         {
             var producto = await context.Productos.FirstOrDefaultAsync(x => x.Id == id);

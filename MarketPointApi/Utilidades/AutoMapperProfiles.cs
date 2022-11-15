@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
+using Microsoft.AspNetCore.Identity;
 
 namespace MarketPointApi.Utilidades
 {
@@ -31,6 +32,10 @@ namespace MarketPointApi.Utilidades
                 .ForMember(x => x.Categorias, options => options.MapFrom(MapearProductosCategorias))
                 .ForMember(x => x.Vendedores, opciones => opciones.MapFrom(MapearProductosVendedores));
             ;
+
+            CreateMap<IdentityUser, UsuarioAdminVendedor>();
+
+            CreateMap<MiCompra, MisComprasDTO>().ReverseMap();
 
         }
 
@@ -102,6 +107,7 @@ namespace MarketPointApi.Utilidades
                     {
                         Id = vendedor.VendedorId,
                         Nombres = vendedor.Vendedor.Nombres,
+                        Email = vendedor.Vendedor.Email,
                         NumeroCelular = vendedor.Vendedor.NumeroCelular,
                         Facebook = vendedor.Vendedor.Facebook,
                         Instagram = vendedor.Vendedor.Instagram

@@ -1,6 +1,10 @@
-﻿using MarketPointApi.DTOs;
+﻿using AutoMapper;
+using MarketPointApi.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,14 +19,61 @@ namespace MarketPointApi.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly IConfiguration configuration;
+        private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
         public CuentasController(UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ApplicationDbContext context,
+            IMapper mapper)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.configuration = configuration;
+            this.context = context;
+            this.mapper = mapper;
+        }
+
+        /*
+         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "vendedor")]
+        public async Task<ActionResult<List<UsuarioAdminVendedor>>> Get()
+        {
+            var usuarios = await context.Users.OrderBy(x => x.Email).ToListAsync();
+            return mapper.Map<List<UsuarioAdminVendedor>>(usuarios);
+        }
+         */
+
+        [HttpGet("{Email}")]
+        public async Task<ActionResult<UsuarioAdminVendedor>> GetBuscarVendedor(string Email)
+        {
+            var usuario = await context.Users.FirstOrDefaultAsync(x => x.Email == Email);
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return mapper.Map<UsuarioAdminVendedor>(usuario);
+
+        }
+
+        [HttpPost("hacerVendedor")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "vendedor")]
+        public async Task<ActionResult> HacerVendedor([FromBody] string usuarioId)
+        {
+            var usuario = await userManager.FindByIdAsync(usuarioId);
+            await userManager.AddClaimAsync(usuario, new Claim("role", "vendedor"));
+            return NoContent();
+        }
+
+        [HttpPost("removerVendedor")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "vendedor")]
+        public async Task<ActionResult> RemoverVendedor([FromBody] string usuarioId)
+        {
+            var usuario = await userManager.FindByIdAsync(usuarioId);
+            await userManager.RemoveClaimAsync(usuario, new Claim("role", "vendedor"));
+            return NoContent();
         }
 
         [HttpPost("CrearCliente")]

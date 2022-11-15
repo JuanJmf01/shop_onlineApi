@@ -2,7 +2,6 @@
 {
     public class Prueba
     {
-        public int ProductoId { get; set; }
-        public int VendedorId { get; set; }
+        public int Id { get; set; }
     }
 }

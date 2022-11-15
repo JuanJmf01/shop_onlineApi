@@ -17,6 +17,7 @@ namespace MarketPointApi.DTOs
         public List<CategoriaDTO> Categorias { get; set; }
         public List<ProductoVendedorDTO> Vendedores  { get; set; }
 
+
         public int VotoUsuario { get; set; }
         public double PromedioVoto { get; set; }
 

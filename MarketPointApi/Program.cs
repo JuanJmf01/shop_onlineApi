@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization(opciones =>
 {
-    opciones.AddPolicy("EsVendedor", policy => policy.RequireClaim("role", "EsVendedor"));
+    opciones.AddPolicy("vendedor", policy => policy.RequireClaim("role", "vendedor"));
 });
 
 //Automapper

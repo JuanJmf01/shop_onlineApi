@@ -34,6 +34,13 @@ namespace MarketPointApi.Controllers
 
         }
 
+        [HttpGet("listadoVendedores")]
+        public async Task<ActionResult<List<VendedorDTO>>> GetUsuariosVendedores()
+        {
+            var usuarios = await context.Vendedores.OrderBy(x => x.Email).ToListAsync();
+            return mapper.Map<List<VendedorDTO>>(usuarios);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<VendedorDTO>> Get(int id)
         {
