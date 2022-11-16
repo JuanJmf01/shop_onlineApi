@@ -43,5 +43,6 @@ namespace MarketPointApi
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<MiCompra> MisCompras { get; set; }
         public DbSet<MiVentaCompra> MisVentasCompras { get; set; }
+        public DbSet<MedioDePago> MediosDePago { get; set; }
     }
 }

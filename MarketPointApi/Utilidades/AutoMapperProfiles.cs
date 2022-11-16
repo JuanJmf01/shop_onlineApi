@@ -21,8 +21,6 @@ namespace MarketPointApi.Utilidades
             CreateMap<UsuarioCreacionDTO, Usuario>();
 
 
-
-
             CreateMap<ProductoCreacionDTO, Producto>()
             .ForMember(x => x.ImagenProducto, opciones => opciones.Ignore())
             .ForMember(x => x.ProductosCategorias, opciones => opciones.MapFrom(MapearProductosCategorias))
@@ -39,6 +37,9 @@ namespace MarketPointApi.Utilidades
 
             CreateMap<MiVentaCompra, MisVentasDTO>().ReverseMap();
 
+            CreateMap<MedioDePago, MedioDePagoDTO>();
+            CreateMap<MedioDePagoCreacionDTO, MedioDePago>()
+                .ForMember(x => x.imagenMedioPago, opciones => opciones.Ignore());
 
         }
 
