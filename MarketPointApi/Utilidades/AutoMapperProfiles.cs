@@ -37,6 +37,9 @@ namespace MarketPointApi.Utilidades
 
             CreateMap<MiCompra, MisComprasDTO>().ReverseMap();
 
+            CreateMap<MiVentaCompra, MisVentasDTO>().ReverseMap();
+
+
         }
 
         private List<ProductosCategorias> MapearProductosCategorias(ProductoCreacionDTO productoCreacionDTO,

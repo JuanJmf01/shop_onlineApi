@@ -13,6 +13,7 @@ namespace MarketPointApi.Controllers
 {
     [ApiController]
     [Route("api/misCompras")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MisComprasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -72,6 +73,63 @@ namespace MarketPointApi.Controllers
         }
 
 
+        //PruebaBorrar
+        [HttpPost("mostrarProductos")]
+        public async Task<ActionResult<List<MisComprasDTO>>> GetProductos([FromBody] int[] pro)
+        {
+            var lenght = pro.Length;
+            var newList = pro.ToList();
+            var enProceso = await context.MisCompras.Where(x => newList.Contains(x.ProductoId) && x.Vendido == false).ToListAsync();
+            var listEnProceso = enProceso.Select(x => x.ProductoId).ToList();
+
+            var misComprasEnProceso = await context.Productos
+                //Primero mapeamos a ProductosCategorias, desps de esa tabla, mapeamos a Categoria
+                //De esta manera podemos utilizar los datos de las tablas producto y categoria, gracias a ProductosCategoria
+                .Include(x => x.ProductosCategorias).ThenInclude(x => x.Categoria)
+                .Include(x => x.ProductosVendedores).ThenInclude(x => x.Vendedor)
+                .Where(x => listEnProceso.Contains(x.Id)).ToListAsync();
+
+
+            if (misComprasEnProceso == null) { return NotFound(); }
+
+            var misComprasEnProcesoDTO = mapper.Map<List<ProductoDTO>>(misComprasEnProceso);
+
+            var lista = new List<MisComprasDTO>();
+            foreach (var i in misComprasEnProceso)
+            {
+                foreach(var x in enProceso)
+                {
+                    lista.Add(new MisComprasDTO()
+                    {
+                        Id = x.Id,
+                        ClienteId = x.ClienteId,
+                        ProductoId = x.ProductoId,
+                        Vendido = x.Vendido,
+                        EsCliente = x.EsCliente,
+                        IdPro = i.Id,
+                        Nombre = i.Nombre,
+                        Precio = i.Precio,
+                        Descripcion = i.Descripcion,
+                        CantidadDisponible = i.CantidadDisponible,
+                        ImagenProducto = i.ImagenProducto
+                    });
+                    enProceso.RemoveAt(0);
+                    break;
+                }
+
+            }
+
+            return lista;
+
+        }
+
+
+
+
+
+
+
+
         [HttpGet("compradoresCliente/{id:int}")]
         public async Task<ActionResult<List<MisComprasDTO>>> GetAllClientes(int id)
         {
@@ -83,23 +141,22 @@ namespace MarketPointApi.Controllers
 
             var misCompras = await clientesQueryable.ToListAsync();
             return mapper.Map<List<MisComprasDTO>>(misCompras);
-
         }
 
         [HttpGet("compradoresVendedor/{id:int}")]
         public async Task<ActionResult<List<MisComprasDTO>>> GetAllVendedores(int id)
         {
-
             var vendedoresQueryable = context.MisCompras.AsQueryable();
             if (id != 0)
             {
-                vendedoresQueryable = vendedoresQueryable.Where(x => x.VendedorId == id && x.EsCliente == false);
+                vendedoresQueryable = vendedoresQueryable.Where(x => x.ClienteId == id && x.EsCliente == false);
             }
 
             var misCompras = await vendedoresQueryable.ToListAsync();
             return mapper.Map<List<MisComprasDTO>>(misCompras);
 
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MisComprasDTO comprasDTO)

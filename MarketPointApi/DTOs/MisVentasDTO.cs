@@ -2,26 +2,22 @@
 
 namespace MarketPointApi.DTOs
 {
-    public class MisComprasDTO
+    public class MisVentasDTO
     {
         public int Id { get; set; }
         public int ClienteId { get; set; }
         public int VendedorId { get; set; }
         public int ProductoId { get; set; }
-        public bool Vendido { get; set; }
-        public bool EsCliente { get; set; }
+        public int total { get; set; }
+        public int cantidad { get; set; }
+        public DateTime fecha { get; set; }
+        public bool esCliente { get; set; }
 
-        public int IdPro { get; set; }
-        public bool Oferta { get; set; }
+
         public string Nombre { get; set; }
         public int Precio { get; set; }
         public string Descripcion { get; set; }
         public int CantidadDisponible { get; set; }
-        public bool Disponible { get; set; }
         public string ImagenProducto { get; set; }
-
-        //Mappear entre las tablas categorias y vendedores
-        public List<CategoriaDTO> Categorias { get; set; }
-        public List<ProductoVendedorDTO> Vendedores { get; set; }
     }
 }
