@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketPointApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221116072219_MediosDePago")]
-    partial class MediosDePago
+    [Migration("20221117185154_MisMisVentasCompras")]
+    partial class MisMisVentasCompras
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,35 +40,6 @@ namespace MarketPointApi.Migrations
                     b.ToTable("Categorias");
                 });
 
-            modelBuilder.Entity("MarketPointApi.Entidades.MedioDePago", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VendedorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("imagenMedioPago")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("VendedorId");
-
-                    b.ToTable("MediosDePago");
-                });
-
             modelBuilder.Entity("MarketPointApi.Entidades.MiCompra", b =>
                 {
                     b.Property<int>("Id")
@@ -82,6 +53,9 @@ namespace MarketPointApi.Migrations
 
                     b.Property<bool>("EsCliente")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ImagenComprobante")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
@@ -128,6 +102,9 @@ namespace MarketPointApi.Migrations
 
                     b.Property<DateTime>("fecha")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("imagenComprobante")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("total")
                         .HasColumnType("int");
@@ -515,25 +492,6 @@ namespace MarketPointApi.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("MarketPointApi.Entidades.MedioDePago", b =>
-                {
-                    b.HasOne("MarketPointApi.Entidades.Usuario", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MarketPointApi.Entidades.Vendedor", "Vendedor")
-                        .WithMany()
-                        .HasForeignKey("VendedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Vendedor");
                 });
 
             modelBuilder.Entity("MarketPointApi.Entidades.MiCompra", b =>

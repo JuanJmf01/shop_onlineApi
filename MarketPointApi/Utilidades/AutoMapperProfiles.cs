@@ -34,12 +34,18 @@ namespace MarketPointApi.Utilidades
             CreateMap<IdentityUser, UsuarioAdminVendedor>();
 
             CreateMap<MiCompra, MisComprasDTO>().ReverseMap();
+            CreateMap<MisComprasCreacionDTO, MiCompra>().ReverseMap()
+                .ForMember(x => x.ImagenComprobante, opciones => opciones.Ignore());
 
             CreateMap<MiVentaCompra, MisVentasDTO>().ReverseMap();
 
             CreateMap<MedioDePago, MedioDePagoDTO>();
             CreateMap<MedioDePagoCreacionDTO, MedioDePago>()
                 .ForMember(x => x.imagenMedioPago, opciones => opciones.Ignore());
+
+            CreateMap<ComprobantePago, ComprobantePagoDTO>();
+            CreateMap<ComprobantePagoCreacionDTO, ComprobantePago>()
+                .ForMember(x => x.ImagenComprobante, opciones => opciones.Ignore());
 
         }
 

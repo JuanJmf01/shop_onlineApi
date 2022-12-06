@@ -2,10 +2,9 @@
 
 namespace MarketPointApi.DTOs
 {
-    public class MisComprasCreacionDTO
+    public class MisVentasCreacionDTO
     {
         public int Id { get; set; }
-        public IFormFile ImagenComprobante { get; set; }
-
+        public IFormFile imagenComprobante { get; set; }
     }
 }

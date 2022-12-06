@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
+using MarketPointApi.Migrations;
 using MarketPointApi.Utilidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +19,21 @@ namespace MarketPointApi.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IAlmacenadorArchivos almacenadorArchivos;
+        private readonly string contenedor = "productos";
+
 
         public MisVentasController(UserManager<IdentityUser> userManager,
             ApplicationDbContext context,
-            IMapper mapper)
+            IMapper mapper,
+            IAlmacenadorArchivos almacenadorArchivos)
         {
             this.userManager = userManager;
             this.context = context;
             this.mapper = mapper;
+            this.almacenadorArchivos = almacenadorArchivos;
+
+
         }
 
         //
@@ -96,10 +104,12 @@ namespace MarketPointApi.Controllers
             var enProceso = await context.MisVentasCompras.OrderBy(x => x.ProductoId).Where(x => newList.Contains(x.ProductoId)).ToListAsync();
             var listEnProceso = enProceso.Select(x => x.ProductoId).ToList();
 
-            var misComprasEnProceso = await context.Productos
+            var misComprasEnProceso = await context.Productos.
+                Include(x => x.ProductosVendedores).ThenInclude(x => x.Vendedor)
                 //Primero mapeamos a ProductosCategorias, desps de esa tabla, mapeamos a Categoria
                 //De esta manera podemos utilizar los datos de las tablas producto y categoria, gracias a ProductosCategoria
                 .Where(x => listEnProceso.Contains(x.Id)).ToListAsync();
+
 
             if (misComprasEnProceso == null) { return NotFound(); }
 
@@ -108,20 +118,34 @@ namespace MarketPointApi.Controllers
             {
                 foreach (var x in enProceso)
                 {
+
+                    
+                     var vendedorId = x.VendedorId;
+                     var vendedor = await context.Vendedores.FirstOrDefaultAsync(x => x.Id == vendedorId);
+                     var res = mapper.Map<VendedorDTO>(vendedor);
+                    
+
+                    var clienteId = x.ClienteId;
+                     var cliente = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == clienteId);
+                     var res2 = mapper.Map<UsuarioDTO>(cliente);
+                    
                     lista.Add(new MisVentasDTO()
                     {
                         Id = x.Id,
                         ClienteId = x.ClienteId,
                         ProductoId = x.ProductoId,
                         esCliente = x.esCliente,
+                        VendedorId = x.VendedorId,
                         total = x.total,
                         cantidad = x.cantidad,
                         Nombre = i.Nombre,
                         Precio = i.Precio,
                         Descripcion = i.Descripcion,
-                        CantidadDisponible = i.CantidadDisponible,
-                        ImagenProducto = i.ImagenProducto
-                    });
+                        imagenComprobante = x.imagenComprobante,
+                        ImagenProducto = i.ImagenProducto,
+                        vendedor = res,
+                        usuario = res2,
+                    }) ;
                     enProceso.RemoveAt(0);
                     break;
                 }
@@ -137,6 +161,24 @@ namespace MarketPointApi.Controllers
             var venta = mapper.Map<MiVentaCompra>(misVentasDTO);
 
             context.Add(venta);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPost("aggComprobanteVendedor")]
+        public async Task<ActionResult> PostComprobante([FromForm] MisVentasCreacionDTO misVentasCreacionDTO)
+        {
+            var ventaActual = await context.MisCompras
+               .FirstOrDefaultAsync(x => x.Id == misVentasCreacionDTO.Id);
+
+            if (ventaActual != null)
+            {
+                if (misVentasCreacionDTO.imagenComprobante != null)
+                {
+                    ventaActual.ImagenComprobante = await almacenadorArchivos.GuardarArchivo(contenedor, misVentasCreacionDTO.imagenComprobante);
+                }
+            }
+
             await context.SaveChangesAsync();
             return NoContent();
         }

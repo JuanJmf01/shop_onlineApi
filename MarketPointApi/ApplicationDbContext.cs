@@ -44,5 +44,6 @@ namespace MarketPointApi
         public DbSet<MiCompra> MisCompras { get; set; }
         public DbSet<MiVentaCompra> MisVentasCompras { get; set; }
         public DbSet<MedioDePago> MediosDePago { get; set; }
+        //public DbSet<ComprobantePago> ComprobantesDePago { get; set; }
     }
 }

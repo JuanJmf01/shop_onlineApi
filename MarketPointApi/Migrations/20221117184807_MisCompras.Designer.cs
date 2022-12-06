@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketPointApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221115050346_MisVentasCompras")]
-    partial class MisVentasCompras
+    [Migration("20221117184807_MisCompras")]
+    partial class MisCompras
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,6 +54,9 @@ namespace MarketPointApi.Migrations
                     b.Property<bool>("EsCliente")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ImagenComprobante")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
@@ -72,46 +75,6 @@ namespace MarketPointApi.Migrations
                     b.HasIndex("VendedorId");
 
                     b.ToTable("MisCompras");
-                });
-
-            modelBuilder.Entity("MarketPointApi.Entidades.MiVentaCompra", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VendedorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("cantidad")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("esCliente")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("total")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClienteId");
-
-                    b.HasIndex("ProductoId");
-
-                    b.HasIndex("VendedorId");
-
-                    b.ToTable("MisVentasCompras");
                 });
 
             modelBuilder.Entity("MarketPointApi.Entidades.Producto", b =>
@@ -489,33 +452,6 @@ namespace MarketPointApi.Migrations
                 });
 
             modelBuilder.Entity("MarketPointApi.Entidades.MiCompra", b =>
-                {
-                    b.HasOne("MarketPointApi.Entidades.Usuario", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MarketPointApi.Entidades.Producto", "Producto")
-                        .WithMany()
-                        .HasForeignKey("ProductoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MarketPointApi.Entidades.Vendedor", "Vendedor")
-                        .WithMany()
-                        .HasForeignKey("VendedorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-
-                    b.Navigation("Producto");
-
-                    b.Navigation("Vendedor");
-                });
-
-            modelBuilder.Entity("MarketPointApi.Entidades.MiVentaCompra", b =>
                 {
                     b.HasOne("MarketPointApi.Entidades.Usuario", "Cliente")
                         .WithMany()

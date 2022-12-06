@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MarketPointApi.DTOs;
 using MarketPointApi.Entidades;
+using MarketPointApi.Migrations;
 using MarketPointApi.Utilidades;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +19,18 @@ namespace MarketPointApi.Controllers
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly ApplicationDbContext context;
+        private readonly IAlmacenadorArchivos almacenadorArchivos;
         private readonly IMapper mapper;
+        private readonly string contenedor = "productos";
 
         public MisComprasController(UserManager<IdentityUser> userManager, 
             ApplicationDbContext context,
+            IAlmacenadorArchivos almacenadorArchivos,
             IMapper mapper)
         {
             this.userManager = userManager;
             this.context = context;
+            this.almacenadorArchivos = almacenadorArchivos;
             this.mapper = mapper;
         }
 
@@ -79,7 +84,7 @@ namespace MarketPointApi.Controllers
         {
             var lenght = pro.Length;
             var newList = pro.ToList();
-            var enProceso = await context.MisCompras.Where(x => newList.Contains(x.ProductoId) && x.Vendido == false).ToListAsync();
+            var enProceso = await context.MisCompras.OrderBy(x => x.ProductoId).Where(x => newList.Contains(x.ProductoId) && x.Vendido == false).ToListAsync();
             var listEnProceso = enProceso.Select(x => x.ProductoId).ToList();
 
             var misComprasEnProceso = await context.Productos
@@ -99,6 +104,20 @@ namespace MarketPointApi.Controllers
             {
                 foreach(var x in enProceso)
                 {
+
+                    
+                    var vendedorId = x.VendedorId;
+                    var vendedor = await context.Vendedores.FirstOrDefaultAsync(x => x.Id == vendedorId);
+                    var res = mapper.Map<VendedorDTO>(vendedor);
+
+
+                    
+                    var clienteId = x.ClienteId;
+                    var cliente = await context.Usuarios.FirstOrDefaultAsync(x => x.Id == clienteId);
+                    var res2 = mapper.Map<UsuarioDTO>(cliente);
+                     
+
+
                     lista.Add(new MisComprasDTO()
                     {
                         Id = x.Id,
@@ -106,12 +125,17 @@ namespace MarketPointApi.Controllers
                         ProductoId = x.ProductoId,
                         Vendido = x.Vendido,
                         EsCliente = x.EsCliente,
+                        VendedorId = x.VendedorId,
                         IdPro = i.Id,
                         Nombre = i.Nombre,
                         Precio = i.Precio,
                         Descripcion = i.Descripcion,
                         CantidadDisponible = i.CantidadDisponible,
-                        ImagenProducto = i.ImagenProducto
+                        ImagenProducto = i.ImagenProducto,
+                        imagenComprobante = x.ImagenComprobante,
+                        vendedor = res,
+                        usuario = res2
+
                     });
                     enProceso.RemoveAt(0);
                     break;
@@ -122,12 +146,6 @@ namespace MarketPointApi.Controllers
             return lista;
 
         }
-
-
-
-
-
-
 
 
         [HttpGet("compradoresCliente/{id:int}")]
@@ -158,12 +176,31 @@ namespace MarketPointApi.Controllers
         }
 
 
+        //Guardar inicialmente desde detalle producto
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] MisComprasDTO comprasDTO)
         {
             var compra = mapper.Map<MiCompra>(comprasDTO);
 
             context.Add(compra);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPost("aggComprobante")]
+        public async Task<ActionResult> PostComprobante([FromForm] MisComprasCreacionDTO misComprasCreacionDTO)
+        {
+            var compraActual = await context.MisCompras
+               .FirstOrDefaultAsync(x => x.Id == misComprasCreacionDTO.Id);
+
+            if (compraActual != null)
+            {
+                if (misComprasCreacionDTO.ImagenComprobante != null)
+                {
+                    compraActual.ImagenComprobante = await almacenadorArchivos.GuardarArchivo(contenedor, misComprasCreacionDTO.ImagenComprobante);
+                }
+            }
+
             await context.SaveChangesAsync();
             return NoContent();
         }

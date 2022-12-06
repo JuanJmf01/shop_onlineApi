@@ -9,6 +9,7 @@ namespace MarketPointApi.DTOs
         public int VendedorId { get; set; }
         public int ProductoId { get; set; }
         public bool Vendido { get; set; }
+        public string imagenComprobante { get; set; }
         public bool EsCliente { get; set; }
 
         public int IdPro { get; set; }
@@ -19,9 +20,10 @@ namespace MarketPointApi.DTOs
         public int CantidadDisponible { get; set; }
         public bool Disponible { get; set; }
         public string ImagenProducto { get; set; }
+        public VendedorDTO vendedor { get; set; }
+        public UsuarioDTO usuario { get; set; }
 
         //Mappear entre las tablas categorias y vendedores
         public List<CategoriaDTO> Categorias { get; set; }
-        public List<ProductoVendedorDTO> Vendedores { get; set; }
     }
 }

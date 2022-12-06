@@ -81,6 +81,9 @@ namespace MarketPointApi.Migrations
                     b.Property<bool>("EsCliente")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ImagenComprobante")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
@@ -126,6 +129,9 @@ namespace MarketPointApi.Migrations
 
                     b.Property<DateTime>("fecha")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("imagenComprobante")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("total")
                         .HasColumnType("int");
